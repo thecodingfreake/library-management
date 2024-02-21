@@ -2,6 +2,8 @@ const express=require("express")
 const mysql=require("mysql2")
 const cors=require("cors")
 const app=express()
+const dotenv=require("dotenv")
+dotenv.config()
 app.use(express.json())
 app.use(cors())
 const pool=mysql.createPool({
@@ -20,6 +22,7 @@ const pool=mysql.createPool({
         }
     })
  })
-app.listen(3000,(req,res)=>{
+ const port=process.env.PORT||3000;
+app.listen(port,(req,res)=>{
     console.log("connected")
 })
