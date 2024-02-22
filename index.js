@@ -26,6 +26,48 @@ app.get("/", (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.post('/add-book', (req, res) => {
+  const {id, title, author, subjects, publish } = req.body;
+
+  if (!title || !author || !subjects || !publish) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+else{  const insertQuery = 'INSERT INTO book (id, title, author, subjects, publish) VALUES (?, ?, ?, ?, ?)';
+
+  pool.query(insertQuery, [id,title, author, subjects, publish], (err, results) => {
+    if (err) {
+      console.error('Error adding book to MySQL:', err);
+      return res.status(500).json({ error: 'Error saving book to the database' });
+    }
+    else{
+      res.send("ok")
+    }
+  })
+}
+})
+app.delete('/delete-book/:id', (req, res) => {
+  const bookId = req.params.id;
+
+  if (!bookId) {
+    return res.status(400).json({ error: 'Book ID is required' });
+  }
+
+  const deleteQuery = 'DELETE FROM book WHERE id = ?';
+
+  pool.query(deleteQuery, [bookId], (err, results) => {
+    if (err) {
+      console.error('Error deleting book from MySQL:', err);
+      return res.status(500).json({ error: 'Error deleting book from the database' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    res.status(200).json({ message: 'Book deleted successfully' });
+  });
+});
+
  const port=process.env.PORT||3000;
 app.listen(port,(req,res)=>{
     console.log("connected")
